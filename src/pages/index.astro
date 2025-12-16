@@ -1,0 +1,1223 @@
+---
+// Casino Game Page - All Games on One Page
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="casino-app">
+        <!-- Header with Coin Balance -->
+        <header class="casino-header">
+            <h1>🎰 Casino Games 🎰</h1>
+            <div class="coin-display">
+                <span class="coin-icon">💰</span>
+                <span class="coin-amount" id="coinBalance">1000</span>
+                <span class="coin-label">Monedas</span>
+            </div>
+        </header>
+
+        <!-- Games Grid -->
+        <div class="games-grid">
+            <!-- Game sections will be added here by JavaScript -->
+        </div>
+    </div>
+
+    <style is:global>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #1a0933 0%, #2d1b4e 50%, #1a0933 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .casino-app {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header Styles */
+        .casino-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .casino-header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .coin-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50px;
+            padding: 1rem 2.5rem;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+        }
+
+        .coin-icon {
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        .coin-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .coin-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Game Section */
+        .game-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-info {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .game-btn {
+            padding: 1.1rem 2.2rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 180px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0933;
+            box-shadow: 0 6px 24px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .game-btn:hover::before {
+            left: 100%;
+        }
+
+        .game-btn:hover:not(:disabled) {
+            box-shadow: 0 10px 32px rgba(255, 215, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .game-btn:active:not(:disabled) {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .game-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(0.5);
+        }
+
+        .info-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffd700;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+
+        .info-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            transform: rotate(15deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 9, 51, 0.95), rgba(45, 27, 78, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .modal-header h3 {
+            font-size: 2rem;
+            color: #ffd700;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 107, 157, 0.3);
+            border-color: #ff6b9d;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+        }
+
+        .modal-body h4 {
+            color: #ffd700;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .modal-body ul, .modal-body ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body strong {
+            color: #ffed4e;
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-height: 50px;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .result-message.win {
+            color: #4ecdc4;
+            text-shadow: 0 0 20px rgba(78, 205, 196, 0.8);
+        }
+
+        .result-message.lose {
+            color: #ff6b9d;
+            text-shadow: 0 0 20px rgba(255, 107, 157, 0.8);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes rocketFly {
+            0% { left: 0%; transform: translate(-50%, -50%) rotate(45deg); }
+            50% { left: 100%; transform: translate(-50%, -50%) rotate(45deg); }
+            50.01% { left: -10%; transform: translate(-50%, -50%) rotate(45deg); }
+            100% { left: 0%; transform: translate(-50%, -50%) rotate(45deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .casino-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .coin-amount {
+                font-size: 2rem;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // Global State
+        let coins = 1000;
+        const BET_AMOUNT = 100;
+
+        // DOM Elements
+        const coinBalanceEl = document.getElementById('coinBalance');
+        const gamesGrid = document.querySelector('.games-grid');
+
+        // Update Coins
+        function updateCoins(amount) {
+            coins += amount;
+            coinBalanceEl.textContent = coins;
+            coinBalanceEl.style.animation = 'none';
+            setTimeout(() => {
+                coinBalanceEl.style.animation = '';
+            }, 10);
+        }
+
+        // Global Modal Counter
+        let modalCounter = 0;
+
+        // Modal Helper
+        function createInfoModal(title, content) {
+            modalCounter++;
+            const modalId = 'modal-' + modalCounter;
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = modalId;
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>${title}</h3>
+                        <button class="close-btn">✕</button>
+                    </div>
+                    <div class="modal-body">${content}</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            const closeBtn = modal.querySelector('.close-btn');
+            closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') modal.classList.remove('active');
+            });
+
+            return modalId;
+        }
+
+        // Initialize all games on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAllGames();
+        });
+
+        function initializeAllGames() {
+            createSlotsGame();
+            createBlackjackGame();
+            createRideBusGame();
+            createCrashGame();
+            createDiceGame();
+            createRouletteGame();
+            createHiLoGame();
+        }
+
+        // 1. SLOTS GAME
+        function createSlotsGame() {
+            const modalContent = `
+                <h4>Objetivo:</h4>
+                <p>Haz girar los 3 carretes y consigue símbolos iguales para ganar.</p>
+                <h4>Cómo Jugar:</h4>
+                <ol>
+                    <li>Presiona <strong>GIRAR</strong> para apostar 100 monedas</li>
+                    <li>Los 3 carretes girarán y mostrarán símbolos aleatorios</li>
+                    <li>Ganas según cuántos símbolos iguales consigas</li>
+                </ol>
+                <h4>Símbolos:</h4>
+                <p>🍒 Cereza | 🍋 Limón | 🍊 Naranja | 🔔 Campana | 💎 Diamante | 7️⃣ Siete</p>
+                <h4>Pagos:</h4>
+                <ul>
+                    <li><strong>3 símbolos iguales:</strong> +300 monedas</li>
+                    <li><strong>2 símbolos iguales:</strong> +150 monedas</li>
+                    <li><strong>Sin coincidencias:</strong> Pierdes 100 monedas</li>
+                </ul>
+            `;
+            const modalId = createInfoModal('🎰 Jackpot Slots - Instrucciones', modalContent);
+
+            const section = document.createElement('div');
+            section.className = 'game-section';
+            section.innerHTML = `
+                <div class="game-header">
+                    <h2 class="game-title">🎰 Jackpot Slots</h2>
+                    <button class="info-btn" onclick="document.getElementById('${modalId}').classList.add('active')">ℹ️</button>
+                </div>
+                <p class="game-info">Apuesta: 100 monedas | 3 iguales: +300 | 2 iguales: +150</p>
+                <div style="display: flex; justify-content: center; gap: 1rem; margin: 2rem 0;">
+                    <div style="width: 100px; height: 120px; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,107,157,0.4); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem;" id="reel1">🍒</div>
+                    <div style="width: 100px; height: 120px; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,107,157,0.4); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem;" id="reel2">🍒</div>
+                    <div style="width: 100px; height: 120px; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,107,157,0.4); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem;" id="reel3">🍒</div>
+                </div>
+                <div class="game-controls">
+                    <button class="game-btn" id="spinBtn">GIRAR (-100 💰)</button>
+                </div>
+                <div class="result-message" id="slotsResult"></div>
+            `;
+            gamesGrid.appendChild(section);
+
+            const symbols = ['🍒', '🍋', '🍊', '🔔', '💎', '7️⃣'];
+            const spinBtn = document.getElementById('spinBtn');
+            const resultEl = document.getElementById('slotsResult');
+
+            spinBtn.addEventListener('click', () => {
+                if (coins < BET_AMOUNT) {
+                    resultEl.textContent = '❌ No tienes suficientes monedas';
+                    resultEl.className = 'result-message lose';
+                    return;
+                }
+
+                updateCoins(-BET_AMOUNT);
+                spinBtn.disabled = true;
+                resultEl.textContent = '';
+
+                const results = [
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)]
+                ];
+
+                let count = 0;
+                const interval = setInterval(() => {
+                    document.getElementById('reel1').textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    document.getElementById('reel2').textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    document.getElementById('reel3').textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    count++;
+                    if (count > 10) {
+                        clearInterval(interval);
+                        document.getElementById('reel1').textContent = results[0];
+                        document.getElementById('reel2').textContent = results[1];
+                        document.getElementById('reel3').textContent = results[2];
+
+                        const matches = {};
+                        results.forEach(s => matches[s] = (matches[s] || 0) + 1);
+                        const maxMatch = Math.max(...Object.values(matches));
+
+                        if (maxMatch === 3) {
+                            updateCoins(300);
+                            resultEl.textContent = '🎉 ¡JACKPOT! +300 monedas';
+                            resultEl.className = 'result-message win';
+                        } else if (maxMatch === 2) {
+                            updateCoins(150);
+                            resultEl.textContent = '✨ ¡2 iguales! +150 monedas';
+                            resultEl.className = 'result-message win';
+                        } else {
+                            resultEl.textContent = '😔 Sin suerte';
+                            resultEl.className = 'result-message lose';
+                        }
+                        spinBtn.disabled = coins < BET_AMOUNT;
+                    }
+                }, 100);
+            });
+        }
+
+        // 2. BLACKJACK GAME
+        function createBlackjackGame() {
+            const modalContent = `
+                <h4>Objetivo:</h4>
+                <p>Consigue 21 puntos o acércate más que el dealer sin pasarte.</p>
+                <h4>Valores de Cartas:</h4>
+                <ul>
+                    <li>Números 2-10: Valor nominal</li>
+                    <li>J, Q, K: 10 puntos</li>
+                    <li>As: 11 o 1 (se ajusta automáticamente)</li>
+                </ul>
+                <h4>Pagos:</h4>
+                <ul>
+                    <li><strong>Blackjack (21 con 2 cartas):</strong> +250 monedas</li>
+                    <li><strong>Ganar:</strong> +200 monedas</li>
+                    <li><strong>Empate:</strong> Recuperas 100 monedas</li>
+                </ul>
+            `;
+            const modalId = createInfoModal('🃏 Blackjack - Instrucciones', modalContent);
+
+            const section = document.createElement('div');
+            section.className = 'game-section';
+            section.innerHTML = `
+                <div class="game-header">
+                    <h2 class="game-title">🃏 Blackjack</h2>
+                    <button class="info-btn" onclick="document.getElementById('${modalId}').classList.add('active')">ℹ️</button>
+                </div>
+                <p class="game-info">Apuesta: 100 monedas | Ganar: +200 | Blackjack: +250</p>
+                <div style="margin: 1.5rem 0;">
+                    <h3 style="margin-bottom: 0.8rem; font-size: 1.1rem;">Dealer <span id="dealerScore"></span></h3>
+                    <div id="dealerCards" style="display: flex; gap: 0.5rem; flex-wrap: wrap; min-height: 70px;"></div>
+                </div>
+                <div style="margin: 1.5rem 0;">
+                    <h3 style="margin-bottom: 0.8rem; font-size: 1.1rem;">Jugador <span id="playerScore"></span></h3>
+                    <div id="playerCards" style="display: flex; gap: 0.5rem; flex-wrap: wrap; min-height: 70px;"></div>
+                </div>
+                <div class="game-controls">
+                    <button class="game-btn" id="dealBtn">REPARTIR (-100 💰)</button>
+                    <button class="game-btn" id="hitBtn" disabled>PEDIR</button>
+                    <button class="game-btn" id="standBtn" disabled>PLANTARSE</button>
+                </div>
+                <div class="result-message" id="bjResult"></div>
+            `;
+            gamesGrid.appendChild(section);
+
+            let deck, playerHand, dealerHand;
+
+            function createDeck() {
+                const suits = ['♠️', '♥️', '♦️', '♣️'];
+                const values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+                const d = [];
+                for (let s of suits) {
+                    for (let v of values) {
+                        d.push({suit: s, value: v, numValue: v === 'A' ? 11 : ['J','Q','K'].includes(v) ? 10 : parseInt(v)});
+                    }
+                }
+                return d.sort(() => Math.random() - 0.5);
+            }
+
+            function calcScore(hand) {
+                let score = 0, aces = 0;
+                hand.forEach(c => {
+                    score += c.numValue;
+                    if (c.value === 'A') aces++;
+                });
+                while (score > 21 && aces > 0) {
+                    score -= 10;
+                    aces--;
+                }
+                return score;
+            }
+
+            function showCards(hand, el, hideSecond = false) {
+                el.innerHTML = '';
+                hand.forEach((c, i) => {
+                    const card = document.createElement('div');
+                    card.style.cssText = 'width:50px;height:70px;background:#fff;border:2px solid #333;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:'+ (['♥️','♦️'].includes(c.suit) ? '#dc143c' : '#333');
+                    card.textContent = (hideSecond && i === 1) ? '🂠' : c.value + c.suit;
+                    el.appendChild(card);
+                });
+            }
+
+            document.getElementById('dealBtn').addEventListener('click', () => {
+                if (coins < BET_AMOUNT) return;
+                updateCoins(-BET_AMOUNT);
+                deck = createDeck();
+                playerHand = [deck.pop(), deck.pop()];
+                dealerHand = [deck.pop(), deck.pop()];
+                showCards(playerHand, document.getElementById('playerCards'));
+                showCards(dealerHand, document.getElementById('dealerCards'), true);
+                document.getElementById('playerScore').textContent = `(${calcScore(playerHand)})`;
+                document.getElementById('dealerScore').textContent = '';
+                document.getElementById('hitBtn').disabled = false;
+                document.getElementById('standBtn').disabled = false;
+                document.getElementById('dealBtn').disabled = true;
+                document.getElementById('bjResult').textContent = '';
+                if (calcScore(playerHand) === 21) endGame();
+            });
+
+            document.getElementById('hitBtn').addEventListener('click', () => {
+                playerHand.push(deck.pop());
+                showCards(playerHand, document.getElementById('playerCards'));
+                const score = calcScore(playerHand);
+                document.getElementById('playerScore').textContent = `(${score})`;
+                if (score >= 21) endGame();
+            });
+
+            document.getElementById('standBtn').addEventListener('click', () => {
+                while (calcScore(dealerHand) < 17) dealerHand.push(deck.pop());
+                endGame();
+            });
+
+            function endGame() {
+                document.getElementById('hitBtn').disabled = true;
+                document.getElementById('standBtn').disabled = true;
+                document.getElementById('dealBtn').disabled = coins < BET_AMOUNT;
+                showCards(dealerHand, document.getElementById('dealerCards'));
+                const pScore = calcScore(playerHand);
+                const dScore = calcScore(dealerHand);
+                document.getElementById('dealerScore').textContent = `(${dScore})`;
+                const resultEl = document.getElementById('bjResult');
+
+                if (pScore > 21) {
+                    resultEl.textContent = '💥 Te pasaste!';
+                    resultEl.className = 'result-message lose';
+                } else if (dScore > 21) {
+                    updateCoins(200);
+                    resultEl.textContent = '🎉 Dealer se pasó! +200';
+                    resultEl.className = 'result-message win';
+                } else if (pScore === 21 && playerHand.length === 2) {
+                    updateCoins(250);
+                    resultEl.textContent = '🃏 BLACKJACK! +250';
+                    resultEl.className = 'result-message win';
+                } else if (pScore > dScore) {
+                    updateCoins(200);
+                    resultEl.textContent = '✨ Ganaste! +200';
+                    resultEl.className = 'result-message win';
+                } else if (pScore < dScore) {
+                    resultEl.textContent = '😔 Dealer gana';
+                    resultEl.className = 'result-message lose';
+                } else {
+                    updateCoins(100);
+                    resultEl.textContent = '🤝 Empate';
+                    resultEl.className = 'result-message';
+                }
+            }
+        }
+
+        // 3. RIDE THE BUS
+        function createRideBusGame() {
+            const modalContent = `
+                <h4>Objetivo:</h4>
+                <p>Supera 4 rondas progresivas adivinando correctamente para ganar hasta x20.</p>
+                <h4>Las 4 Rondas:</h4>
+                <ul>
+                    <li><strong>Ronda 1 - Roja o Negra (x2):</strong> Adivina el color</li>
+                    <li><strong>Ronda 2 - Mayor o Menor (x3):</strong> Compara con la 1ª carta</li>
+                    <li><strong>Ronda 3 - Dentro o Fuera (x5):</strong> Rango de las 2 primeras</li>
+                    <li><strong>Ronda 4 - Palo (x20):</strong> Adivina el palo exacto</li>
+                </ul>
+            `;
+            const modalId = createInfoModal('🚌 Ride the Bus - Instrucciones', modalContent);
+
+            const section = document.createElement('div');
+            section.className = 'game-section';
+            section.innerHTML = `
+                <div class="game-header">
+                    <h2 class="game-title">🚌 Ride the Bus</h2>
+                    <button class="info-btn" onclick="document.getElementById('${modalId}').classList.add('active')">ℹ️</button>
+                </div>
+                <p class="game-info">4 rondas progresivas | Hasta x20</p>
+                <div style="text-align:center;margin:1.5rem 0;">
+                    <div style="margin-bottom:1rem;">
+                        <label style="margin-right:1rem;">Apuesta:</label>
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.busBet=50">50</button>
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;opacity:1;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.busBet=100">100</button>
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.busBet=200">200</button>
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.busBet=500">500</button>
+                    </div>
+                    <div id="busCards" style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;min-height:80px;margin:1.5rem 0;"></div>
+                    <div id="busPrompt" style="font-size:1.2rem;margin:1rem 0;color:#ffd700;"></div>
+                </div>
+                <div class="game-controls">
+                    <button class="game-btn" id="busStart">COMENZAR</button>
+                    <button class="game-btn" id="busCashout" style="display:none;background:linear-gradient(135deg,#10b981,#34d399);">COBRAR</button>
+                </div>
+                <div class="result-message" id="busResult"></div>
+            `;
+            gamesGrid.appendChild(section);
+
+            window.busBet = 100;
+            let busRound = 0, busDeck = [], busCards = [], busActive = false;
+            const MULT = [2,3,5,20];
+
+            function createBusDeck() {
+                const suits = ['♠️','♥️','♦️','♣️'];
+                const values = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+                const d = [];
+                for (let s of suits) {
+                    for (let v of values) {
+                        d.push({suit:s, value:v, numValue:values.indexOf(v)+2, color:['♥️','♦️'].includes(s)?'red':'black'});
+                    }
+                }
+                return d.sort(()=>Math.random()-0.5);
+            }
+
+            function showBusCards() {
+                const el = document.getElementById('busCards');
+                el.innerHTML = '';
+                busCards.forEach(c => {
+                    const card = document.createElement('div');
+                    card.style.cssText = 'width:50px;height:70px;background:#fff;border:2px solid #333;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:'+(c.color==='red'?'#dc143c':'#333');
+                    card.textContent = c.value + c.suit;
+                    el.appendChild(card);
+                });
+            }
+
+            document.getElementById('busStart').addEventListener('click', () => {
+                if (coins < window.busBet) return;
+                updateCoins(-window.busBet);
+                busDeck = createBusDeck();
+                busCards = [];
+                busRound = 0;
+                busActive = true;
+                document.getElementById('busStart').style.display = 'none';
+                document.getElementById('busCashout').style.display = 'inline-block';
+                document.getElementById('busResult').textContent = '';
+                nextRound();
+            });
+
+            document.getElementById('busCashout').addEventListener('click', () => {
+                const win = window.busBet * MULT[busRound-2];
+                updateCoins(win);
+                document.getElementById('busResult').textContent = `💰 Cobraste ${win} monedas! (x${MULT[busRound-2]})`;
+                document.getElementById('busResult').className = 'result-message win';
+                endBusGame();
+            });
+
+            function nextRound() {
+                busRound++;
+                const promptEl = document.getElementById('busPrompt');
+                if (busRound === 1) {
+                    promptEl.innerHTML = '<button class="game-btn" style="background:linear-gradient(135deg,#dc143c,#ff6b9d);" onclick="window.busChoice(\'red\')">ROJA</button> <button class="game-btn" style="background:linear-gradient(135deg,#1f2937,#374151);" onclick="window.busChoice(\'black\')">NEGRA</button>';
+                } else if (busRound === 2) {
+                    promptEl.innerHTML = '<button class="game-btn" onclick="window.busChoice(\'higher\')">MAYOR</button> <button class="game-btn" onclick="window.busChoice(\'lower\')">MENOR</button>';
+                } else if (busRound === 3) {
+                    promptEl.innerHTML = '<button class="game-btn" onclick="window.busChoice(\'inside\')">DENTRO</button> <button class="game-btn" onclick="window.busChoice(\'outside\')">FUERA</button>';
+                } else if (busRound === 4) {
+                    promptEl.innerHTML = '<button class="game-btn" onclick="window.busChoice(\'♠️\')">♠️</button> <button class="game-btn" onclick="window.busChoice(\'♥️\')">♥️</button> <button class="game-btn" onclick="window.busChoice(\'♦️\')">♦️</button> <button class="game-btn" onclick="window.busChoice(\'♣️\')">♣️</button>';
+                }
+            }
+
+            window.busChoice = (choice) => {
+                const card = busDeck.pop();
+                busCards.push(card);
+                showBusCards();
+                let correct = false;
+
+                if (busRound === 1) correct = card.color === choice;
+                else if (busRound === 2) correct = (choice === 'higher' && card.numValue > busCards[0].numValue) || (choice === 'lower' && card.numValue < busCards[0].numValue);
+                else if (busRound === 3) {
+                    const min = Math.min(busCards[0].numValue, busCards[1].numValue);
+                    const max = Math.max(busCards[0].numValue, busCards[1].numValue);
+                    correct = (choice === 'inside' && card.numValue > min && card.numValue < max) || (choice === 'outside' && (card.numValue < min || card.numValue > max));
+                } else if (busRound === 4) correct = card.suit === choice;
+
+                if (correct) {
+                    if (busRound === 4) {
+                        const win = window.busBet * 20;
+                        updateCoins(win);
+                        document.getElementById('busResult').textContent = `🎉 ¡COMPLETADO! +${win} monedas`;
+                        document.getElementById('busResult').className = 'result-message win';
+                        endBusGame();
+                    } else {
+                        document.getElementById('busResult').textContent = `✅ Correcto! Ronda ${busRound} (x${MULT[busRound-1]})`;
+                        document.getElementById('busResult').className = 'result-message win';
+                        nextRound();
+                    }
+                } else {
+                    document.getElementById('busResult').textContent = '❌ Incorrecto! Perdiste todo';
+                    document.getElementById('busResult').className = 'result-message lose';
+                    endBusGame();
+                }
+            };
+
+            function endBusGame() {
+                busActive = false;
+                document.getElementById('busPrompt').innerHTML = '';
+                document.getElementById('busStart').style.display = 'inline-block';
+                document.getElementById('busCashout').style.display = 'none';
+            }
+        }
+
+        // 4. CRASH GAME
+        function createCrashGame() {
+            const modalContent = `
+                <h4>Objetivo:</h4>
+                <p>Retira tu apuesta antes de que el cohete explote para ganar según el multiplicador.</p>
+                <h4>Mecánica:</h4>
+                <ul>
+                    <li><strong>Multiplicador:</strong> Sube +0.01 cada 100ms</li>
+                    <li><strong>Crash:</strong> Totalmente aleatorio (sin límite máximo)</li>
+                    <li><strong>Ganancia:</strong> Apuesta × Multiplicador al retirar</li>
+                </ul>
+            `;
+            const modalId = createInfoModal('🚀 Rocket Crash - Instrucciones', modalContent);
+
+            const section = document.createElement('div');
+            section.className = 'game-section';
+            section.innerHTML = `
+                <div class="game-header">
+                    <h2 class="game-title">🚀 Rocket Crash</h2>
+                    <button class="info-btn" onclick="document.getElementById('${modalId}').classList.add('active')">ℹ️</button>
+                </div>
+                <p class="game-info">Retira antes del crash</p>
+                <div style="text-align:center;margin:1.5rem 0;">
+                    <div style="margin-bottom:1rem;">
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;opacity:1;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.crashBet=50">50</button>
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.crashBet=100">100</button>
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.crashBet=200">200</button>
+                        <button class="game-btn" style="min-width:80px;padding:0.7rem 1rem;font-size:1rem;" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.opacity='0.5');this.style.opacity='1';window.crashBet=500">500</button>
+                    </div>
+                    <div id="crashMult" style="font-size:3.5rem;font-weight:800;color:#f59e0b;margin:1.5rem 0;">1.00x</div>
+                    <div style="position:relative;height:60px;background:rgba(245,158,11,0.1);border-radius:30px;overflow:hidden;margin:1rem 0;">
+                        <div id="crashBar" style="position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,rgba(245,158,11,0.2),rgba(251,191,36,0.4));width:100%;"></div>
+                        <div id="crashRocket" style="position:absolute;left:5%;top:50%;transform:translate(-50%,-50%) rotate(45deg);font-size:2.5rem;transition:left 0.1s;">🚀</div>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="game-btn" id="crashStart">APOSTAR</button>
+                    <button class="game-btn" id="crashCashout" style="display:none;background:linear-gradient(135deg,#10b981,#34d399);">RETIRAR</button>
+                </div>
+                <div class="result-message" id="crashResult"></div>
+            `;
+            gamesGrid.appendChild(section);
+
+            window.crashBet = 50;
+            let crashActive = false, crashMult = 1.0, crashPoint = 0, crashInt = null;
+
+            document.getElementById('crashStart').addEventListener('click', () => {
+                if (coins < window.crashBet) return;
+                updateCoins(-window.crashBet);
+                crashActive = true;
+                crashMult = 1.0;
+                const rand = Math.random();
+                // Algoritmo exponencial (Provably Fair standard simulation)
+                // 1% House Edge. Puede ser 1.00x, 2.00x, o 1000.00x
+                crashPoint = Math.floor(Math.max(1.00, (1 / (1 - rand)) * 0.99) * 100) / 100;
+                document.getElementById('crashStart').style.display = 'none';
+                document.getElementById('crashCashout').style.display = 'inline-block';
+                document.getElementById('crashResult').textContent = '';
+                
+                // Start animation
+                const rocket = document.getElementById('crashRocket');
+                rocket.style.animation = 'rocketFly 2s linear infinite';
+
+                crashInt = setInterval(() => {
+                    crashMult += 0.01;
+                    document.getElementById('crashMult').textContent = crashMult.toFixed(2) + 'x';
+                    
+                    // Removed predictive progress bar logic
+
+                    if (crashMult >= crashPoint) {
+                        clearInterval(crashInt);
+                        rocket.style.animation = 'none';
+                        document.getElementById('crashResult').textContent = '💥 CRASH! Perdiste';
+                        document.getElementById('crashResult').className = 'result-message lose';
+                        endCrashGame();
+                    }
+                }, 100);
+            });
+
+            document.getElementById('crashCashout').addEventListener('click', () => {
+                if (!crashActive) return;
+                clearInterval(crashInt);
+                const win = Math.floor(window.crashBet * crashMult);
+                updateCoins(win);
+                document.getElementById('crashResult').textContent = `🎉 Retiraste a ${crashMult.toFixed(2)}x! +${win}`;
+                document.getElementById('crashResult').className = 'result-message win';
+                endCrashGame();
+            });
+
+            function endCrashGame() {
+                crashActive = false;
+                document.getElementById('crashStart').style.display = 'inline-block';
+                document.getElementById('crashCashout').style.display = 'none';
+                setTimeout(() => {
+                    document.getElementById('crashMult').textContent = '1.00x';
+                    document.getElementById('crashRocket').style.animation = 'none';
+                    document.getElementById('crashRocket').style.left = '5%';
+                }, 1000);
+            }
+        }
+
+        // 5. DICE GAME
+        function createDiceGame() {
+            const modalContent = `
+                <h4>Objetivo:</h4>
+                <p>Adivina si la suma de 2 dados será ALTA o BAJA.</p>
+                <h4>Rangos:</h4>
+                <ul>
+                    <li><strong>BAJO:</strong> 2, 3, 4, 5, 6</li>
+                    <li><strong>7:</strong> Empate (recuperas 100)</li>
+                    <li><strong>ALTO:</strong> 8, 9, 10, 11, 12</li>
+                </ul>
+            `;
+            const modalId = createInfoModal('🎲 Dados - Instrucciones', modalContent);
+
+            const section = document.createElement('div');
+            section.className = 'game-section';
+            section.innerHTML = `
+                <div class="game-header">
+                    <h2 class="game-title">🎲 Dados</h2>
+                    <button class="info-btn" onclick="document.getElementById('${modalId}').classList.add('active')">ℹ️</button>
+                </div>
+                <p class="game-info">Apuesta: 100 monedas | Alto/Bajo | x2</p>
+                <div style="display:flex;justify-content:center;gap:2rem;margin:2rem 0;">
+                    <div id="die1" style="font-size:4rem;">🎲</div>
+                    <div id="die2" style="font-size:4rem;">🎲</div>
+                </div>
+                <div class="game-controls">
+                    <button class="game-btn" onclick="window.rollDice('low')">BAJO (2-6)</button>
+                    <button class="game-btn" onclick="window.rollDice('high')">ALTO (8-12)</button>
+                </div>
+                <div class="result-message" id="diceResult"></div>
+            `;
+            gamesGrid.appendChild(section);
+
+            const dice = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+
+            window.rollDice = (choice) => {
+                if (coins < BET_AMOUNT) return;
+                updateCoins(-BET_AMOUNT);
+
+                const d1 = Math.floor(Math.random() * 6) + 1;
+                const d2 = Math.floor(Math.random() * 6) + 1;
+                const sum = d1 + d2;
+
+                let count = 0;
+                const interval = setInterval(() => {
+                    document.getElementById('die1').textContent = dice[Math.floor(Math.random() * 6)];
+                    document.getElementById('die2').textContent = dice[Math.floor(Math.random() * 6)];
+                    count++;
+                    if (count > 8) {
+                        clearInterval(interval);
+                        document.getElementById('die1').textContent = dice[d1-1];
+                        document.getElementById('die2').textContent = dice[d2-1];
+
+                        const resultEl = document.getElementById('diceResult');
+                        if (sum === 7) {
+                            updateCoins(100);
+                            resultEl.textContent = `🎲 Suma: ${sum} - Empate!`;
+                            resultEl.className = 'result-message';
+                        } else if ((choice === 'low' && sum < 7) || (choice === 'high' && sum > 7)) {
+                            updateCoins(200);
+                            resultEl.textContent = `🎉 Suma: ${sum} - Ganaste! +200`;
+                            resultEl.className = 'result-message win';
+                        } else {
+                            resultEl.textContent = `😔 Suma: ${sum} - Perdiste`;
+                            resultEl.className = 'result-message lose';
+                        }
+                    }
+                }, 100);
+            };
+        }
+
+        // 6. ROULETTE GAME
+        function createRouletteGame() {
+            const modalContent = `
+                <h4>Objetivo:</h4>
+                <p>Apuesta al color correcto antes de que gire la ruleta.</p>
+                <h4>Pagos:</h4>
+                <ul>
+                    <li><strong>Rojo o Negro:</strong> +200 monedas (x2)</li>
+                    <li><strong>Verde (0):</strong> +3600 monedas (x36) 🎰</li>
+                </ul>
+            `;
+            const modalId = createInfoModal('🎡 Mini Ruleta - Instrucciones', modalContent);
+
+            const section = document.createElement('div');
+            section.className = 'game-section';
+            section.innerHTML = `
+                <div class="game-header">
+                    <h2 class="game-title">🎡 Mini Ruleta</h2>
+                    <button class="info-btn" onclick="document.getElementById('${modalId}').classList.add('active')">ℹ️</button>
+                </div>
+                <p class="game-info">Apuesta: 100 monedas | Color x2 | Verde x36</p>
+                <div style="width:180px;height:180px;margin:0 auto 2rem;border-radius:50%;background:linear-gradient(135deg,#1f2937,#374151);border:6px solid rgba(236,72,153,0.3);display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(236,72,153,0.4);">
+                    <div id="rouletteNum" style="font-size:3.5rem;font-weight:800;color:#ec4899;">?</div>
+                </div>
+                <div class="game-controls">
+                    <button class="game-btn" style="background:linear-gradient(135deg,#dc143c,#ff6b9d);" onclick="window.spinRoulette('red')">ROJO</button>
+                    <button class="game-btn" style="background:linear-gradient(135deg,#1f2937,#374151);" onclick="window.spinRoulette('black')">NEGRO</button>
+                    <button class="game-btn" style="background:linear-gradient(135deg,#10b981,#34d399);" onclick="window.spinRoulette('green')">VERDE</button>
+                </div>
+                <div class="result-message" id="rouletteResult"></div>
+            `;
+            gamesGrid.appendChild(section);
+
+            const reds = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+            const blacks = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
+
+            window.spinRoulette = (choice) => {
+                if (coins < BET_AMOUNT) return;
+                updateCoins(-BET_AMOUNT);
+
+                const num = Math.floor(Math.random() * 37);
+                let count = 0;
+                const interval = setInterval(() => {
+                    document.getElementById('rouletteNum').textContent = Math.floor(Math.random() * 37);
+                    count++;
+                    if (count > 12) {
+                        clearInterval(interval);
+                        document.getElementById('rouletteNum').textContent = num;
+                        const resultNumEl = document.getElementById('rouletteNum');
+
+                        const color = num === 0 ? 'green' : reds.includes(num) ? 'red' : 'black';
+                        
+                        // Set color
+                        if (color === 'green') resultNumEl.style.color = '#10b981';
+                        else if (color === 'red') resultNumEl.style.color = '#dc143c';
+                        else resultNumEl.style.color = '#9ca3af';
+
+                        const resultEl = document.getElementById('rouletteResult');
+
+                        if (color === choice) {
+                            if (choice === 'green') {
+                                updateCoins(3600);
+                                resultEl.textContent = `🎰 ${num} VERDE! +3600`;
+                            } else {
+                                updateCoins(200);
+                                resultEl.textContent = `🎉 ${num} ${choice === 'red' ? 'ROJO' : 'NEGRO'}! +200`;
+                            }
+                            resultEl.className = 'result-message win';
+                        } else {
+                            resultEl.textContent = `😔 Salió ${num} (${color === 'green' ? 'VERDE' : color === 'red' ? 'ROJO' : 'NEGRO'})`;
+                            resultEl.className = 'result-message lose';
+                        }
+                    }
+                }, 100);
+            };
+        }
+
+        // 7. HI-LO CARD GAME
+        function createHiLoGame() {
+            const modalContent = `
+                <h4>Objetivo:</h4>
+                <p>Construye una racha adivinando si la siguiente carta será mayor o menor.</p>
+                <h4>Sistema de Ganancias:</h4>
+                <ul>
+                    <li>Racha 1: 200 monedas (x2)</li>
+                    <li>Racha 2: 400 monedas (x4)</li>
+                    <li>Racha 3: 800 monedas (x8)</li>
+                    <li>Racha 4+: Continúa duplicando...</li>
+                </ul>
+                <h4>Consejo:</h4>
+                <p>💡 Cobra después de 2-3 aciertos para asegurar ganancias!</p>
+            `;
+            const modalId = createInfoModal('🃏 Hi-Lo Card - Instrucciones', modalContent);
+
+            const section = document.createElement('div');
+            section.className = 'game-section';
+            section.innerHTML = `
+                <div class="game-header">
+                    <h2 class="game-title">🃏 Hi-Lo Card</h2>
+                    <button class="info-btn" onclick="document.getElementById('${modalId}').classList.add('active')">ℹ️</button>
+                </div>
+                <p class="game-info">Construye rachas | x2 por acierto</p>
+                <div style="text-align:center;margin:1.5rem 0;">
+                    <div id="hiloCard" style="width:100px;height:140px;margin:0 auto 1.5rem;background:linear-gradient(135deg,#14b8a6,#2dd4bf);border:3px solid #0d9488;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;font-weight:800;color:white;">?</div>
+                    <div id="hiloStreak" style="font-size:1.3rem;color:#ffd700;margin-bottom:1rem;">Racha: 0 | Ganancia: 0</div>
+                </div>
+                <div class="game-controls">
+                    <button class="game-btn" id="hiloStart">COMENZAR (-100 💰)</button>
+                    <button class="game-btn" id="hiloHigher" style="display:none;">MAYOR</button>
+                    <button class="game-btn" id="hiloLower" style="display:none;">MENOR</button>
+                    <button class="game-btn" id="hiloCashout" style="display:none;background:linear-gradient(135deg,#10b981,#34d399);">COBRAR</button>
+                </div>
+                <div class="result-message" id="hiloResult"></div>
+            `;
+            gamesGrid.appendChild(section);
+
+            let hiloDeck, hiloStreak, hiloActive, currentCard;
+            const vals = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+            function createHiloDeck() {
+                const d = [];
+                for (let i = 0; i < 4; i++) {
+                    vals.forEach((v, idx) => d.push({value: v, numValue: idx}));
+                }
+                return d.sort(() => Math.random() - 0.5);
+            }
+
+            document.getElementById('hiloStart').addEventListener('click', () => {
+                if (coins < BET_AMOUNT) return;
+                updateCoins(-BET_AMOUNT);
+                hiloDeck = createHiloDeck();
+                hiloStreak = 0;
+                hiloActive = true;
+                currentCard = hiloDeck.pop();
+                document.getElementById('hiloCard').textContent = currentCard.value;
+                document.getElementById('hiloStreak').textContent = `Racha: 0 | Ganancia: 0`;
+                document.getElementById('hiloStart').style.display = 'none';
+                document.getElementById('hiloHigher').style.display = 'inline-block';
+                document.getElementById('hiloLower').style.display = 'inline-block';
+                document.getElementById('hiloCashout').style.display = 'inline-block';
+                document.getElementById('hiloResult').textContent = '';
+            });
+
+            function hiloGuess(choice) {
+                if (!hiloActive) return;
+                const nextCard = hiloDeck.pop();
+                document.getElementById('hiloCard').textContent = nextCard.value;
+
+                const correct = (choice === 'higher' && nextCard.numValue > currentCard.numValue) || (choice === 'lower' && nextCard.numValue < currentCard.numValue);
+
+                if (correct) {
+                    hiloStreak++;
+                    const potential = BET_AMOUNT * Math.pow(2, hiloStreak);
+                    document.getElementById('hiloStreak').textContent = `Racha: ${hiloStreak} | Ganancia: ${potential}`;
+                    document.getElementById('hiloResult').textContent = `✅ Correcto! Racha: ${hiloStreak}`;
+                    document.getElementById('hiloResult').className = 'result-message win';
+                    currentCard = nextCard;
+                } else {
+                    document.getElementById('hiloResult').textContent = '❌ Incorrecto! Perdiste todo';
+                    document.getElementById('hiloResult').className = 'result-message lose';
+                    endHiloGame();
+                }
+            }
+
+            document.getElementById('hiloHigher').addEventListener('click', () => hiloGuess('higher'));
+            document.getElementById('hiloLower').addEventListener('click', () => hiloGuess('lower'));
+
+            document.getElementById('hiloCashout').addEventListener('click', () => {
+                const win = BET_AMOUNT * Math.pow(2, hiloStreak);
+                updateCoins(win);
+                document.getElementById('hiloResult').textContent = `💰 Cobraste ${win} monedas!`;
+                document.getElementById('hiloResult').className = 'result-message win';
+                endHiloGame();
+            });
+
+            function endHiloGame() {
+                hiloActive = false;
+                document.getElementById('hiloStart').style.display = 'inline-block';
+                document.getElementById('hiloHigher').style.display = 'none';
+                document.getElementById('hiloLower').style.display = 'none';
+                document.getElementById('hiloCashout').style.display = 'none';
+                setTimeout(() => {
+                    document.getElementById('hiloCard').textContent = '?';
+                    document.getElementById('hiloStreak').textContent = 'Racha: 0 | Ganancia: 0';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
